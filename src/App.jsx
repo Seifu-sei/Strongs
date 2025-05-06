@@ -1,18 +1,16 @@
-import { BrowserRouter as Router } from "react-router-dom";
+// App.jsx (no router needed here)
 import AppRoutes from "./routes";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow">
-          <AppRoutes />
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <AppRoutes />
+      </main>
+      <Footer />
+    </div>
   );
 }
