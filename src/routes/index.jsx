@@ -8,8 +8,8 @@ import Contact from "../pages/Contact";
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/" element={<About />} />
+      <Route path="/" element={<Home />} /> {/* 👈 This makes '/' show Home */}
+      <Route path="/about" element={<About />} />
       <Route path="/events" element={<Events />} />
       <Route path="/webinars" element={<Webinars />} />
       <Route path="/contact" element={<Contact />} />
