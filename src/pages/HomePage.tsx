@@ -129,7 +129,7 @@ const HomePage = () => {
               icon={<Calendar className="h-8 w-8" />}
               title="Events"
               description="Upcoming conferences and events"
-              onClick={() => navigate("/resources")}
+              onClick={() => navigate("/events")}
             />
           </div>
         </div>
