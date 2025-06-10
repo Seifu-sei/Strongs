@@ -138,7 +138,7 @@ const AboutPage = () => {
               name="Ev. Enoch Oluwatobi, OLADOSU"
               role="Head of Mission"
               bio="Ev. Enoch is an evangelist. He is committed to preaching and raising young ones."
-              image="https://media.discordapp.net/attachments/1121602193271820330/1379243467879743590/FB_IMG_1748369912831.jpg?ex=6848c293&is=68477113&hm=77f096dfa65dfaa3b37e9f6d468151834226cb8225942c3ab456143f856a0936&=&format=webp&width=256&height=569"
+              image="https://media.discordapp.net/attachments/1121602193271820330/1381939939503247411/image.png?ex=6849575c&is=684805dc&hm=5369631d9f9dd29f293d2730881f84c595c16cb7d64a05e6e787bbe7150a2531&=&format=webp&quality=lossless"
             />
           </div>
         </div>
@@ -162,7 +162,7 @@ const AboutPage = () => {
                   Email Us
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  contact@strongs.org
+                  strongambassadorabok@gmail.com
                 </p>
               </div>
               <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -178,7 +178,7 @@ const AboutPage = () => {
                   Follow Us
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  strongambassadorabok@gmail.com
+                  @Youtube Coming Soon
                 </p>
               </div>
             </div>
