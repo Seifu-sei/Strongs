@@ -178,7 +178,7 @@ const AboutPage = () => {
                   Follow Us
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  @Youtube Coming Soon
+                  @Strongs on facebook
                 </p>
               </div>
             </div>
