@@ -75,10 +75,10 @@ app.post("/api/smc/register", upload.single("photo"), async (req, res) => {
 
     // Email notification to admin/user
     const toAddress = (req.body?.email as string) || "no-reply@example.com";
-    const admin = process.env.ADMIN_EMAIL || toAddress;
+    const admin = process.env.ADMIN_EMAIL || "strongsimpact@gmail.com" || toAddress;
     const info = await transporter.sendMail({
       to: admin,
-      from: process.env.FROM_EMAIL || "strongs@example.com",
+      from: process.env.FROM_EMAIL || "strongsimpact@gmail.com",
       subject: "New SMC Registration",
       text: `A new SMC registration was received for ${req.body?.lastName || ""} ${req.body?.firstName || ""}.`,
     });
