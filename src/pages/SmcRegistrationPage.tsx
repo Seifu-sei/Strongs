@@ -143,6 +143,14 @@ const SmcRegistrationPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+        <div className="mb-6 overflow-hidden rounded-lg">
+          <img
+            src="https://drive.google.com/uc?export=view&id=10jpc9TV1oHnUbB1aaH57OHkC5TRPUKGD"
+            alt="SMC Registration Banner"
+            className="w-full h-48 object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
         <h1 className="text-3xl font-bold mb-6 text-center">SMC Registration</h1>
 
         <div className="mb-6 text-center text-sm">

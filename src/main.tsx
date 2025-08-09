@@ -1,6 +1,6 @@
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom"; // <-- Add this import
+import { HashRouter } from "react-router-dom"; // Use HashRouter for GitHub Pages
 import App from "./App.tsx";
 import "./index.css";
 
@@ -15,9 +15,9 @@ const Root = () => {
 
   return (
     <StrictMode>
-      <BrowserRouter>
+      <HashRouter>
         <App />
-      </BrowserRouter>
+      </HashRouter>
     </StrictMode>
   );
 };
