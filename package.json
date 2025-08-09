@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://godswork4.github.io/Strongs/",
+  "homepage": "https://Seifu-sei.github.io/Strongs/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
