@@ -23,9 +23,11 @@ export function useLocation(): Location {
     };
 
     window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
     
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
     };
   }, []);
 
@@ -33,8 +35,8 @@ export function useLocation(): Location {
 }
 
 export function navigate(to: string): void {
-  window.history.pushState({}, '', to);
-  
-  // Trigger a navigation event so components can detect the change
-  window.dispatchEvent(new PopStateEvent('popstate'));
+  const normalized = to.startsWith('#')
+    ? to
+    : `#/${to.startsWith('/') ? to.slice(1) : to}`;
+  window.location.hash = normalized;
 }

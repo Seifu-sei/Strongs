@@ -155,9 +155,9 @@ const SmcRegistrationPage: React.FC = () => {
 
         <div className="mb-6 text-center text-sm">
           <span className="text-gray-600 dark:text-gray-300">Have a Strongs account? </span>
-          <a href="/signin" className="text-blue-700">Sign in</a>
+          <a href="#/signin" className="text-blue-700">Sign in</a>
           <span className="mx-2">or</span>
-          <a href="/signup" className="text-blue-700">Sign up</a>
+          <a href="#/signup" className="text-blue-700">Sign up</a>
         </div>
 
         {message && (

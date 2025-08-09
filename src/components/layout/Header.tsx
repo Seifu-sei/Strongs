@@ -40,25 +40,25 @@ const Header = ({ isScrolled }: HeaderProps) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <NavLink href="/" onClick={() => handleNavigation("/")}>
+            <NavLink href="#/" onClick={() => handleNavigation("/")}>
               Home
             </NavLink>
-            <NavLink href="/about" onClick={() => handleNavigation("/about")}>
+            <NavLink href="#/about" onClick={() => handleNavigation("/about")}>
               About
             </NavLink>
             <NavLink
-              href="/resources"
+              href="#/resources"
               onClick={() => handleNavigation("/resources")}
             >
               Resources
             </NavLink>
             <NavLink
-              href="/article"
+              href="#/article"
               onClick={() => handleNavigation("/article")}
             >
               Articles
             </NavLink>
-            <NavLink href="/events" onClick={() => handleNavigation("/events")}>
+            <NavLink href="#/events" onClick={() => handleNavigation("/events")}>
               Events
             </NavLink>
           </nav>
@@ -106,29 +106,29 @@ const Header = ({ isScrolled }: HeaderProps) => {
       {isMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <MobileNavLink href="/" onClick={() => handleNavigation("/")}>
+            <MobileNavLink href="#/" onClick={() => handleNavigation("/")}>
               Home
             </MobileNavLink>
             <MobileNavLink
-              href="/about"
+              href="#/about"
               onClick={() => handleNavigation("/about")}
             >
               About
             </MobileNavLink>
             <MobileNavLink
-              href="/resources"
+              href="#/resources"
               onClick={() => handleNavigation("/resources")}
             >
               Resources
             </MobileNavLink>
             <MobileNavLink
-              href="/article"
+              href="#/article"
               onClick={() => handleNavigation("/article")}
             >
               Articles
             </MobileNavLink>
             <MobileNavLink
-              href="/search"
+              href="#/search"
               onClick={() => handleNavigation("/search")}
             >
               Search
