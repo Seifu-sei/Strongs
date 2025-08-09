@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
 /* Base styles */
 @layer base {
   body {
@@ -26,8 +25,9 @@
 .preload * {
   transition: none !important;
 }
-=======
-/* in index.css */
+
+/* Custom utilities */
+/* Hide scrollbars utility */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -35,4 +35,3 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
->>>>>>> 1b5c486f02108dde67b53c5e5f4df1547fd6128d
