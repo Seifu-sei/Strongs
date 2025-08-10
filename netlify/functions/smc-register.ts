@@ -41,11 +41,11 @@ export const handler: Handler = async (event) => {
       const ext = (photoName as string).toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
       const { data: uploadData, error: uploadErr } = await supabase
         .storage.from('smc-photos').upload(filePath, fileBytes, { contentType: ext, cacheControl: '3600', upsert: false });
-      if (uploadErr) {
-        return { statusCode: 500, body: JSON.stringify({ ok: false, message: `Upload failed: ${uploadErr.message}` }) };
-      }
-      const { data: publicUrl } = supabase.storage.from('smc-photos').getPublicUrl(uploadData!.path);
-      photo_url = publicUrl.publicUrl;
+      if (!uploadErr && uploadData) {
+        const { data: publicUrl } = supabase.storage.from('smc-photos').getPublicUrl(uploadData.path);
+        photo_url = publicUrl.publicUrl;
+      } // if upload fails (e.g., bucket missing), continue without photo
+
     }
 
     const { error: insertErr } = await supabase.from('smc_registrations').insert([{ 
