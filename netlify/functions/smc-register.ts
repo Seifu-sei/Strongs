@@ -1,8 +1,8 @@
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL as string | undefined;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE as string | undefined;
+const supabaseUrl = (process.env.SUPABASE_URL || process.env.SUPABASE_URL_PUBLIC || process.env.VITE_SUPABASE_URL) as string | undefined;
+const supabaseKey = (process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY) as string | undefined;
 
 export const handler: Handler = async (event) => {
   try {
