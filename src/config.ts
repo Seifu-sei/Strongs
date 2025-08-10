@@ -5,4 +5,4 @@ export const SUPABASE_URL: string | null = (import.meta as any).env?.VITE_SUPABA
 export const SUPABASE_KEY: string | null = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || null;
 export const HAS_SUPABASE: boolean = !!(SUPABASE_URL && SUPABASE_KEY);
 
-export const WHATSAPP_PHONE: string | null = (import.meta as any).env?.VITE_WHATSAPP_PHONE || null;
+export const WHATSAPP_PHONE: string | null = (import.meta as any).env?.VITE_WHATSAPP_PHONE || '09154689360';

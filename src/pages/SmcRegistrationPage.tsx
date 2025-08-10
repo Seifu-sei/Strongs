@@ -152,7 +152,7 @@ const SmcRegistrationPage: React.FC = () => {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data?.ok) throw new Error(data?.message || `Registration failed (${res.status})`);
+      if (!res.ok || !data?.ok) throw new Error(data?.message || `Registration failed (${res.status})` + (data?.diagnostics ? `\nDetails: ${JSON.stringify(data.diagnostics)}` : ''));
 
       setMessageType("success");
       setMessage("Registration submitted successfully.");
