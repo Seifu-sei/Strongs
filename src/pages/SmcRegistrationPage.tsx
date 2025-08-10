@@ -3,7 +3,11 @@ import { API_BASE_URL, HAS_SUPABASE } from "../config";
 import smcBannerFallback from "../assets/images/lautech-smc.jpg";
 import { supabase } from "../lib/supabaseClient";
 
-// Find a local image whose filename starts with 2025 and ends with .png
+// Prefer a root-level smc.png if present
+const rootAssets = (import.meta as any).glob("../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
+const smcPng = rootAssets["../assets/smc.png"] as string | undefined;
+
+// Otherwise find a local image whose filename starts with 2025 and ends with .png
 const assetMap = (import.meta as any).glob("../assets/**/*.{png,jpg,jpeg}", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
 let dynamicBanner: string | null = null;
 for (const [path, url] of Object.entries(assetMap)) {
@@ -13,7 +17,7 @@ for (const [path, url] of Object.entries(assetMap)) {
     break;
   }
 }
-const smcBanner = dynamicBanner || smcBannerFallback;
+const smcBanner = smcPng || dynamicBanner || smcBannerFallback;
 
 const nigeriaStates = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"

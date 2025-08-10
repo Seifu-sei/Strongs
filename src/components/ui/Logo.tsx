@@ -1,12 +1,17 @@
 import React from "react";
-import logo from "../../assets/Strongs.png";
+import defaultLogo from "../../assets/Strongs.png";
+
+// Prefer "Strongs logo.png" if present
+const assetMap = (import.meta as any).glob("../../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
+const preferredLogo = assetMap["../../assets/Strongs logo.png"]; // note the space in filename
+const logoUrl = preferredLogo || defaultLogo;
 
 const Logo: React.FC = () => {
   return (
     <div className="flex items-center">
       <div className="h-10 w-10 overflow-hidden rounded-full white-100 flex items-center justify-center">
         <img
-          src={logo}
+          src={logoUrl}
           alt="Strongs Logo"
           className="h-10 w-10 object-cover"
         />
