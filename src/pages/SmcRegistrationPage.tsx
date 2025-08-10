@@ -1,23 +1,10 @@
 import React, { useMemo, useRef, useState } from "react";
 import { API_BASE_URL, HAS_SUPABASE } from "../config";
-import smcBannerFallback from "../assets/images/lautech-smc.jpg";
 import { supabase } from "../lib/supabaseClient";
 
-// Prefer a root-level smc.png if present
+// Use only a root-level smc.png if present
 const rootAssets = (import.meta as any).glob("../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
-const smcPng = rootAssets["../assets/smc.png"] as string | undefined;
-
-// Otherwise find a local image whose filename starts with 2025 and ends with .png
-const assetMap = (import.meta as any).glob("../assets/**/*.{png,jpg,jpeg}", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
-let dynamicBanner: string | null = null;
-for (const [path, url] of Object.entries(assetMap)) {
-  const name = path.split("/").pop() || "";
-  if (/^2025.*\.png$/i.test(name)) {
-    dynamicBanner = url;
-    break;
-  }
-}
-const smcBanner = smcPng || dynamicBanner || smcBannerFallback;
+const smcBanner = rootAssets["../assets/smc.png"] as string | undefined;
 
 const nigeriaStates = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"
@@ -210,21 +197,16 @@ const SmcRegistrationPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-        <div className="mb-6 overflow-hidden rounded-lg">
-          <img
-            src={smcBanner}
-            alt="SMC Registration Banner"
-            className="w-full h-48 object-cover"
-          />
-        </div>
+        {smcBanner && (
+          <div className="mb-6 overflow-hidden rounded-lg">
+            <img
+              src={smcBanner}
+              alt="SMC Registration Banner"
+              className="w-full h-48 object-cover"
+            />
+          </div>
+        )}
         <h1 className="text-3xl font-bold mb-6 text-center">SMC Registration</h1>
-
-        <div className="mb-6 text-center text-sm">
-          <span className="text-gray-600 dark:text-gray-300">Have a Strongs account? </span>
-          <a href="#/signin" className="text-blue-700">Sign in</a>
-          <span className="mx-2">or</span>
-          <a href="#/signup" className="text-blue-700">Sign up</a>
-        </div>
 
         {message && (
           <div className="mb-4 text-sm p-3 rounded border" role="alert">
