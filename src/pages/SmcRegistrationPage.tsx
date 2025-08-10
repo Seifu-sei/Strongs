@@ -64,18 +64,12 @@ const SmcRegistrationPage: React.FC = () => {
     fellowship: "",
     department: "",
     level: "",
-    matricNumber: "",
     calling: "",
     counselling: "",
     otherFellowship: "",
     otherDepartment: "",
     otherLevel: "",
     otherCounselling: "",
-    emergencyContactName: "",
-    emergencyContactPhone: "",
-    emergencyRelationship: "",
-    pastorName: "",
-    pastorPhone: "",
     consent: false,
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -248,10 +242,6 @@ const SmcRegistrationPage: React.FC = () => {
               <input name="institution" value={form.institution} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
             </div>
             <div>
-              <label className="block mb-1">Matric/Reg No. (Optional)</label>
-              <input name="matricNumber" value={form.matricNumber} onChange={handleChange} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
-            <div>
               <label className="block mb-1">Department</label>
               <select name="department" value={form.department} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
                 <option value="">Select Department</option>
@@ -300,32 +290,6 @@ const SmcRegistrationPage: React.FC = () => {
               {form.counselling === "Yes - Other" && (
                 <input className="mt-2 w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" name="otherCounselling" value={form.otherCounselling} onChange={handleChange} placeholder="Please specify" />
               )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-1">Emergency Contact Name</label>
-              <input name="emergencyContactName" value={form.emergencyContactName} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
-            <div>
-              <label className="block mb-1">Emergency Contact Phone</label>
-              <input type="tel" name="emergencyContactPhone" value={form.emergencyContactPhone} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
-            <div>
-              <label className="block mb-1">Relationship</label>
-              <input name="emergencyRelationship" value={form.emergencyRelationship} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-1">Pastor's Name</label>
-              <input name="pastorName" value={form.pastorName} onChange={handleChange} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
-            <div>
-              <label className="block mb-1">Pastor's Phone</label>
-              <input type="tel" name="pastorPhone" value={form.pastorPhone} onChange={handleChange} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
             </div>
           </div>
 
