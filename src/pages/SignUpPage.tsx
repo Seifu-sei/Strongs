@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL, HAS_API } from "../config";
 
 const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,13 +15,20 @@ const SignUpPage: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to sign up");
+      if (HAS_API && API_BASE_URL) {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to sign up");
+      } else {
+        const users = JSON.parse(localStorage.getItem("mock_users") || "[]");
+        if (users.some((u: any) => u.email === email)) throw new Error("Email already registered (offline mode)");
+        users.push({ id: crypto.randomUUID?.() || String(Date.now()), name, email, password });
+        localStorage.setItem("mock_users", JSON.stringify(users));
+      }
       navigate("/signin");
     } catch (err: any) {
       setError(err.message);

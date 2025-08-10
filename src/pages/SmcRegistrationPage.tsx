@@ -103,16 +103,25 @@ const SmcRegistrationPage: React.FC = () => {
     setSubmitting(true);
     setMessage(null);
     try {
-      const formData = new FormData();
-      Object.entries(form).forEach(([k, v]) => formData.append(k, String(v)));
-      if (photoFile) formData.append("photo", photoFile);
-      const res = await fetch(`${API_BASE_URL}/api/smc/register`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to submit");
-      setMessage("Registration submitted successfully.");
+      if (API_BASE_URL) {
+        const formData = new FormData();
+        Object.entries(form).forEach(([k, v]) => formData.append(k, String(v)));
+        if (photoFile) formData.append("photo", photoFile);
+        const res = await fetch(`${API_BASE_URL}/api/smc/register`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to submit");
+        setMessage("Registration submitted successfully.");
+      } else {
+        const existing = JSON.parse(localStorage.getItem("mock_smc") || "[]");
+        const id = (crypto as any).randomUUID?.() || String(Date.now());
+        const payload = { id, ...form, photoName: photoFile?.name || null, createdAt: new Date().toISOString() };
+        existing.push(payload);
+        localStorage.setItem("mock_smc", JSON.stringify(existing));
+        setMessage("Registration saved locally (offline mode).");
+      }
     } catch (err: any) {
       setMessage(err.message);
     } finally {

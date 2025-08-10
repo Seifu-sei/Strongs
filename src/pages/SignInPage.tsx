@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL, HAS_API } from "../config";
 
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,15 +14,23 @@ const SignInPage: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to sign in");
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (HAS_API && API_BASE_URL) {
+        const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to sign in");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } else {
+        const users = JSON.parse(localStorage.getItem("mock_users") || "[]");
+        const user = users.find((u: any) => u.email === email && u.password === password);
+        if (!user) throw new Error("Invalid credentials (offline mode)");
+        localStorage.setItem("token", "offline-token");
+        localStorage.setItem("user", JSON.stringify({ id: user.id, name: user.name, email: user.email }));
+      }
       navigate("/");
     } catch (err: any) {
       setError(err.message);
