@@ -333,20 +333,20 @@ const SmcRegistrationPage: React.FC = () => {
               className="border rounded p-3 flex items-center gap-3 bg-white dark:bg-gray-900 relative overflow-hidden"
               style={smcBanner ? { backgroundImage: `url(${smcBanner})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
             >
-              <div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70" />
-              <div className="relative w-16 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/40" />
+              <div className="relative w-16 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center ring-2 ring-white/70">
                 {photoFile ? (
                   <img src={URL.createObjectURL(photoFile)} alt="passport" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-xs text-gray-500">No photo</span>
+                  <span className="text-xs text-gray-100">No photo</span>
                 )}
               </div>
-              <div className="relative">
+              <div className="relative text-white drop-shadow">
                 <div className="font-semibold">{fullName || "Full Name"}</div>
-                <div className="text-xs text-gray-600">Institution: {form.institution || ""}</div>
-                <div className="text-xs text-gray-600">Department: {form.department || ""}</div>
-                <div className="text-xs text-gray-600">Fellowship: {form.fellowship || form.otherFellowship || ""}</div>
-                <div className="text-xs text-gray-600">Calling: {form.calling || ""}</div>
+                <div className="text-xs">Institution: {form.institution || ""}</div>
+                <div className="text-xs">Department: {form.department || ""}</div>
+                <div className="text-xs">Fellowship: {form.fellowship || form.otherFellowship || ""}</div>
+                <div className="text-xs">Calling: {form.calling || ""}</div>
               </div>
             </div>
           </div>

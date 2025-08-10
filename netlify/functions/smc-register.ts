@@ -1,18 +1,27 @@
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE as string;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = process.env.SUPABASE_URL as string | undefined;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE as string | undefined;
 
 export const handler: Handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
-
   try {
-    const body = JSON.parse(event.body || '{}');
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: 'Method Not Allowed' };
+    }
+
+    if (!supabaseUrl || !supabaseKey) {
+      return { statusCode: 500, body: JSON.stringify({ ok: false, message: 'Server is not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE).' }) };
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    let parsed: any = {};
+    try {
+      parsed = JSON.parse(event.body || '{}');
+    } catch (e) {
+      return { statusCode: 400, body: JSON.stringify({ ok: false, message: 'Invalid JSON body' }) };
+    }
 
     const {
       firstName, lastName, otherNames,
@@ -23,15 +32,18 @@ export const handler: Handler = async (event) => {
       fellowship, calling, counselling,
       otherFellowship, otherDepartment, otherLevel, otherCounselling,
       photoBase64, photoName
-    } = body;
+    } = parsed;
 
     let photo_url: string | null = null;
     if (photoBase64 && photoName) {
       const fileBytes = Buffer.from(photoBase64, 'base64');
       const filePath = `photos/${Date.now()}_${photoName}`;
+      const ext = (photoName as string).toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
       const { data: uploadData, error: uploadErr } = await supabase
-        .storage.from('smc-photos').upload(filePath, fileBytes, { contentType: 'image/jpeg' });
-      if (uploadErr) throw uploadErr;
+        .storage.from('smc-photos').upload(filePath, fileBytes, { contentType: ext, cacheControl: '3600', upsert: false });
+      if (uploadErr) {
+        return { statusCode: 500, body: JSON.stringify({ ok: false, message: `Upload failed: ${uploadErr.message}` }) };
+      }
       const { data: publicUrl } = supabase.storage.from('smc-photos').getPublicUrl(uploadData!.path);
       photo_url = publicUrl.publicUrl;
     }
@@ -61,7 +73,9 @@ export const handler: Handler = async (event) => {
       other_counselling: otherCounselling || null,
       photo_url
     }]);
-    if (insertErr) throw insertErr;
+    if (insertErr) {
+      return { statusCode: 500, body: JSON.stringify({ ok: false, message: `Save failed: ${insertErr.message}` }) };
+    }
 
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (e: any) {
