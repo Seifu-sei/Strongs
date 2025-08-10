@@ -11,8 +11,6 @@ import SearchPage from "./pages/SearchPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
 // ...other imports...
 
 function App() {
@@ -40,8 +38,6 @@ function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/SmcRegistrationPage" element={<SmcRegistrationPage />} />
             <Route path="/search" element={<SearchPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
