@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { API_BASE_URL } from "../config";
+import smcBanner from "../assets/images/lautech-smc.jpg";
 
 const nigeriaStates = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"
@@ -148,10 +149,12 @@ const SmcRegistrationPage: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         <div className="mb-6 overflow-hidden rounded-lg">
           <img
-            src="https://drive.google.com/uc?export=view&id=10jpc9TV1oHnUbB1aaH57OHkC5TRPUKGD"
+            src={smcBanner}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://drive.google.com/uc?export=view&id=10jpc9TV1oHnUbB1aaH57OHkC5TRPUKGD";
+            }}
             alt="SMC Registration Banner"
             className="w-full h-48 object-cover"
-            referrerPolicy="no-referrer"
           />
         </div>
         <h1 className="text-3xl font-bold mb-6 text-center">SMC Registration</h1>
