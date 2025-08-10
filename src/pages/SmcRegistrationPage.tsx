@@ -1,6 +1,18 @@
 import React, { useMemo, useRef, useState } from "react";
 import { API_BASE_URL } from "../config";
-import smcBanner from "../assets/images/smc-banner.jpg";
+import smcBannerFallback from "../assets/images/lautech-smc.jpg";
+
+// Find a local image whose filename starts with 2025 and ends with .png
+const assetMap = (import.meta as any).glob("../assets/**/*.{png,jpg,jpeg}", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
+let dynamicBanner: string | null = null;
+for (const [path, url] of Object.entries(assetMap)) {
+  const name = path.split("/").pop() || "";
+  if (/^2025.*\.png$/i.test(name)) {
+    dynamicBanner = url;
+    break;
+  }
+}
+const smcBanner = dynamicBanner || smcBannerFallback;
 
 const nigeriaStates = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"
@@ -150,9 +162,6 @@ const SmcRegistrationPage: React.FC = () => {
         <div className="mb-6 overflow-hidden rounded-lg">
           <img
             src={smcBanner}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://drive.google.com/uc?export=view&id=10jpc9TV1oHnUbB1aaH57OHkC5TRPUKGD";
-            }}
             alt="SMC Registration Banner"
             className="w-full h-48 object-cover"
           />
