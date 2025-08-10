@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import { WHATSAPP_PHONE } from "../config";
 
 // Use only a root-level smc.jpg if present
 const rootAssets = (import.meta as any).glob("../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
@@ -103,6 +104,7 @@ const SmcRegistrationPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<MessageType>(null);
+  const [success, setSuccess] = useState(false);
   const idCardRef = useRef<HTMLDivElement>(null);
 
   const fullName = useMemo(() => `${form.lastName} ${form.firstName} ${form.otherNames}`.trim(), [form]);
@@ -154,6 +156,7 @@ const SmcRegistrationPage: React.FC = () => {
 
       setMessageType("success");
       setMessage("Registration submitted successfully.");
+      setSuccess(true);
     } catch (err: any) {
       setMessageType("error");
       setMessage(err.message || "Registration failed.");
@@ -357,10 +360,20 @@ const SmcRegistrationPage: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <button disabled={submitting} type="submit" className={`flex-1 text-white font-semibold py-3 rounded-md ${submitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-900'}`}>
-              {submitting ? 'Submitting...' : 'Register'}
+            <button disabled={submitting || success} type="submit" className={`flex-1 text-white font-semibold py-3 rounded-md ${submitting || success ? 'bg-green-700 cursor-default' : 'bg-blue-800 hover:bg-blue-900'}`}>
+              {submitting ? 'Submitting...' : success ? 'Registered' : 'Register'}
             </button>
             <button type="button" onClick={handleDownloadId} className="sm:w-56 bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-md">Download ID (PDF)</button>
+            {success && (
+              <a
+                className="sm:w-56 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 rounded-md text-center"
+                href={`https://wa.me/${WHATSAPP_PHONE || ''}?text=${encodeURIComponent(`Hello, I just registered for SMC. Name: ${fullName}. Institution: ${form.institution}. Department: ${form.department}. Fellowship: ${form.fellowship || form.otherFellowship || ''}.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Send ID via WhatsApp
+              </a>
+            )}
           </div>
         </form>
       </div>
