@@ -1,10 +1,10 @@
 import React, { useMemo, useRef, useState } from "react";
-import { API_BASE_URL, HAS_SUPABASE } from "../config";
+import { HAS_SUPABASE } from "../config";
 import { supabase } from "../lib/supabaseClient";
 
-// Use only a root-level smc.png if present
+// Use only a root-level smc.jpg if present
 const rootAssets = (import.meta as any).glob("../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
-const smcBanner = rootAssets["../assets/smc.png"] as string | undefined;
+const smcBanner = rootAssets["../assets/smc.jpg"] as string | undefined;
 
 const nigeriaStates = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"
@@ -51,6 +51,8 @@ const counsellingOptions = [
   "Yes - Other",
 ];
 
+type MessageType = "success" | "error" | null;
+
 const SmcRegistrationPage: React.FC = () => {
   const [form, setForm] = useState({
     firstName: "",
@@ -64,7 +66,7 @@ const SmcRegistrationPage: React.FC = () => {
     email: "",
     address: "",
     state: "",
-    lga: "",
+    lga: "", // kept in state but not shown in UI
     institution: "",
     fellowship: "",
     department: "",
@@ -80,6 +82,7 @@ const SmcRegistrationPage: React.FC = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<MessageType>(null);
   const idCardRef = useRef<HTMLDivElement>(null);
 
   const fullName = useMemo(() => `${form.lastName} ${form.firstName} ${form.otherNames}`.trim(), [form]);
@@ -101,74 +104,62 @@ const SmcRegistrationPage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     setMessage(null);
+    setMessageType(null);
     try {
-      if (HAS_SUPABASE && supabase) {
-        // Upload photo if present
-        let photo_url: string | null = null;
-        if (photoFile) {
-          const filePath = `photos/${Date.now()}_${photoFile.name}`;
-          const { data: uploadData, error: uploadErr } = await supabase
-            .storage
-            .from('smc-photos')
-            .upload(filePath, photoFile, { upsert: false });
-          if (uploadErr) throw uploadErr;
-          const { data: publicUrl } = supabase
-            .storage
-            .from('smc-photos')
-            .getPublicUrl(uploadData!.path);
-          photo_url = publicUrl.publicUrl;
-        }
-
-        const { error: insertErr } = await supabase
-          .from('smc_registrations')
-          .insert([{ 
-            first_name: form.firstName,
-            last_name: form.lastName,
-            other_names: form.otherNames || null,
-            dob: form.dob,
-            gender: form.gender,
-            marital_status: form.maritalStatus,
-            phone: form.phone,
-            whatsapp: form.whatsapp,
-            email: form.email,
-            address: form.address,
-            state: form.state,
-            lga: form.lga,
-            institution: form.institution,
-            department: form.department,
-            level: form.level,
-            fellowship: form.fellowship,
-            calling: form.calling,
-            counselling: form.counselling,
-            other_fellowship: form.otherFellowship || null,
-            other_department: form.otherDepartment || null,
-            other_level: form.otherLevel || null,
-            other_counselling: form.otherCounselling || null,
-            photo_url
-          }]);
-        if (insertErr) throw insertErr;
-        setMessage("Registration submitted successfully.");
-      } else if (API_BASE_URL) {
-        const formData = new FormData();
-        Object.entries(form).forEach(([k, v]) => formData.append(k, String(v)));
-        if (photoFile) formData.append("photo", photoFile);
-        const res = await fetch(`${API_BASE_URL}/api/smc/register`, {
-          method: "POST",
-          body: formData,
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.message || "Failed to submit");
-        setMessage("Registration submitted successfully.");
-      } else {
-        const existing = JSON.parse(localStorage.getItem("mock_smc") || "[]");
-        const id = (crypto as any).randomUUID?.() || String(Date.now());
-        const payload = { id, ...form, photoName: photoFile?.name || null, createdAt: new Date().toISOString() };
-        existing.push(payload);
-        localStorage.setItem("mock_smc", JSON.stringify(existing));
-        setMessage("Registration saved locally (offline mode).");
+      if (!(HAS_SUPABASE && supabase)) {
+        throw new Error("Registration service is not configured. Please try again later.");
       }
+
+      // Upload photo if present
+      let photo_url: string | null = null;
+      if (photoFile) {
+        const filePath = `photos/${Date.now()}_${photoFile.name}`;
+        const { data: uploadData, error: uploadErr } = await supabase
+          .storage
+          .from('smc-photos')
+          .upload(filePath, photoFile, { upsert: false });
+        if (uploadErr) throw uploadErr;
+        const { data: publicUrl } = supabase
+          .storage
+          .from('smc-photos')
+          .getPublicUrl(uploadData!.path);
+        photo_url = publicUrl.publicUrl;
+      }
+
+      const { error: insertErr } = await supabase
+        .from('smc_registrations')
+        .insert([{ 
+          first_name: form.firstName,
+          last_name: form.lastName,
+          other_names: form.otherNames || null,
+          dob: form.dob,
+          gender: form.gender,
+          marital_status: form.maritalStatus,
+          phone: form.phone,
+          whatsapp: form.whatsapp,
+          email: form.email,
+          address: form.address,
+          state: form.state,
+          lga: form.lga || "",
+          institution: form.institution,
+          department: form.department,
+          level: form.level,
+          fellowship: form.fellowship,
+          calling: form.calling,
+          counselling: form.counselling,
+          other_fellowship: form.otherFellowship || null,
+          other_department: form.otherDepartment || null,
+          other_level: form.otherLevel || null,
+          other_counselling: form.otherCounselling || null,
+          photo_url
+        }]);
+      if (insertErr) throw insertErr;
+
+      setMessageType("success");
+      setMessage("Registration submitted successfully.");
     } catch (err: any) {
-      setMessage(err.message);
+      setMessageType("error");
+      setMessage(err.message || "Registration failed.");
     } finally {
       setSubmitting(false);
     }
@@ -209,7 +200,7 @@ const SmcRegistrationPage: React.FC = () => {
         <h1 className="text-3xl font-bold mb-6 text-center">SMC Registration</h1>
 
         {message && (
-          <div className="mb-4 text-sm p-3 rounded border" role="alert">
+          <div className={`mb-4 text-sm p-3 rounded border ${messageType === 'success' ? 'border-green-600 text-green-700' : 'border-red-600 text-red-700'}`} role="alert">
             {message}
           </div>
         )}
@@ -275,10 +266,7 @@ const SmcRegistrationPage: React.FC = () => {
                 {nigeriaStates.map((s)=> (<option key={s} value={s}>{s}</option>))}
               </select>
             </div>
-            <div>
-              <label className="block mb-1">LGA</label>
-              <input name="lga" value={form.lga} onChange={handleChange} required className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" />
-            </div>
+            {/* LGA field removed from UI */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -355,6 +343,8 @@ const SmcRegistrationPage: React.FC = () => {
                 <div className="font-semibold">{fullName || "Full Name"}</div>
                 <div className="text-xs text-gray-600">Institution: {form.institution || ""}</div>
                 <div className="text-xs text-gray-600">Department: {form.department || ""}</div>
+                <div className="text-xs text-gray-600">Fellowship: {form.fellowship || form.otherFellowship || ""}</div>
+                <div className="text-xs text-gray-600">Calling: {form.calling || ""}</div>
               </div>
             </div>
           </div>
@@ -365,7 +355,9 @@ const SmcRegistrationPage: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <button disabled={submitting} type="submit" className="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-semibold py-3 rounded-md">{submitting ? "Submitting..." : "Register"}</button>
+            <button disabled={submitting} type="submit" className={`flex-1 text-white font-semibold py-3 rounded-md ${submitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-900'}`}>
+              {submitting ? 'Submitting...' : 'Register'}
+            </button>
             <button type="button" onClick={handleDownloadId} className="sm:w-56 bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-md">Download ID (PDF)</button>
           </div>
         </form>
