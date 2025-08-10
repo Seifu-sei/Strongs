@@ -1,6 +1,4 @@
 import React, { useMemo, useRef, useState } from "react";
-import { HAS_SUPABASE } from "../config";
-import { supabase } from "../lib/supabaseClient";
 
 // Use only a root-level smc.jpg if present
 const rootAssets = (import.meta as any).glob("../assets/*", { eager: true, import: "default", query: "?url" }) as Record<string, string>;
@@ -106,54 +104,26 @@ const SmcRegistrationPage: React.FC = () => {
     setMessage(null);
     setMessageType(null);
     try {
-      if (!(HAS_SUPABASE && supabase)) {
-        throw new Error("Registration service is not configured. Please try again later.");
-      }
-
-      // Upload photo if present
-      let photo_url: string | null = null;
+      // Prepare base64 if photo provided
+      let photoBase64: string | null = null;
+      let photoName: string | null = null;
       if (photoFile) {
-        const filePath = `photos/${Date.now()}_${photoFile.name}`;
-        const { data: uploadData, error: uploadErr } = await supabase
-          .storage
-          .from('smc-photos')
-          .upload(filePath, photoFile, { upsert: false });
-        if (uploadErr) throw uploadErr;
-        const { data: publicUrl } = supabase
-          .storage
-          .from('smc-photos')
-          .getPublicUrl(uploadData!.path);
-        photo_url = publicUrl.publicUrl;
+        const arrayBuffer = await photoFile.arrayBuffer();
+        photoBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+        photoName = photoFile.name;
       }
 
-      const { error: insertErr } = await supabase
-        .from('smc_registrations')
-        .insert([{ 
-          first_name: form.firstName,
-          last_name: form.lastName,
-          other_names: form.otherNames || null,
-          dob: form.dob,
-          gender: form.gender,
-          marital_status: form.maritalStatus,
-          phone: form.phone,
-          whatsapp: form.whatsapp,
-          email: form.email,
-          address: form.address,
-          state: form.state,
-          lga: form.lga || "",
-          institution: form.institution,
-          department: form.department,
-          level: form.level,
-          fellowship: form.fellowship,
-          calling: form.calling,
-          counselling: form.counselling,
-          other_fellowship: form.otherFellowship || null,
-          other_department: form.otherDepartment || null,
-          other_level: form.otherLevel || null,
-          other_counselling: form.otherCounselling || null,
-          photo_url
-        }]);
-      if (insertErr) throw insertErr;
+      const res = await fetch('/.netlify/functions/smc-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          photoBase64,
+          photoName,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.ok) throw new Error(data?.message || 'Registration failed');
 
       setMessageType("success");
       setMessage("Registration submitted successfully.");
