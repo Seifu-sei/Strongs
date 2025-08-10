@@ -51,6 +51,28 @@ const counsellingOptions = [
 
 type MessageType = "success" | "error" | null;
 
+async function compressImageToBase64(file: File, maxWidth = 700, quality = 0.8): Promise<{ base64: string; name: string }>{
+  const img = document.createElement("img");
+  const src = URL.createObjectURL(file);
+  img.src = src;
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = reject;
+  });
+  const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas not supported");
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL("image/jpeg", quality);
+  URL.revokeObjectURL(src);
+  const base64 = dataUrl.split(",")[1] || "";
+  const name = file.name.replace(/\.[^.]+$/, ".jpg");
+  return { base64, name };
+}
+
 const SmcRegistrationPage: React.FC = () => {
   const [form, setForm] = useState({
     firstName: "",
@@ -64,7 +86,7 @@ const SmcRegistrationPage: React.FC = () => {
     email: "",
     address: "",
     state: "",
-    lga: "", // kept in state but not shown in UI
+    lga: "",
     institution: "",
     fellowship: "",
     department: "",
@@ -104,13 +126,18 @@ const SmcRegistrationPage: React.FC = () => {
     setMessage(null);
     setMessageType(null);
     try {
-      // Prepare base64 if photo provided
       let photoBase64: string | null = null;
       let photoName: string | null = null;
       if (photoFile) {
-        const arrayBuffer = await photoFile.arrayBuffer();
-        photoBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-        photoName = photoFile.name;
+        const { base64, name } = await compressImageToBase64(photoFile, 700, 0.8);
+        photoBase64 = base64;
+        photoName = name;
+        // if still too large, reduce quality
+        if (photoBase64.length > 1_200_000) { // ~0.9MB base64
+          const retry = await compressImageToBase64(photoFile, 600, 0.7);
+          photoBase64 = retry.base64;
+          photoName = retry.name;
+        }
       }
 
       const res = await fetch('/.netlify/functions/smc-register', {
@@ -122,8 +149,8 @@ const SmcRegistrationPage: React.FC = () => {
           photoName,
         }),
       });
-      const data = await res.json();
-      if (!res.ok || !data?.ok) throw new Error(data?.message || 'Registration failed');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.ok) throw new Error(data?.message || `Registration failed (${res.status})`);
 
       setMessageType("success");
       setMessage("Registration submitted successfully.");
@@ -301,15 +328,20 @@ const SmcRegistrationPage: React.FC = () => {
               <label className="block mb-1">Passport Photograph</label>
               <input type="file" accept="image/*" onChange={handlePhotoChange} />
             </div>
-            <div ref={idCardRef} className="border rounded p-3 flex items-center gap-3 bg-white dark:bg-gray-900">
-              <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center">
+            <div
+              ref={idCardRef}
+              className="border rounded p-3 flex items-center gap-3 bg-white dark:bg-gray-900 relative overflow-hidden"
+              style={smcBanner ? { backgroundImage: `url(${smcBanner})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+            >
+              <div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70" />
+              <div className="relative w-16 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center">
                 {photoFile ? (
                   <img src={URL.createObjectURL(photoFile)} alt="passport" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-xs text-gray-500">No photo</span>
                 )}
               </div>
-              <div>
+              <div className="relative">
                 <div className="font-semibold">{fullName || "Full Name"}</div>
                 <div className="text-xs text-gray-600">Institution: {form.institution || ""}</div>
                 <div className="text-xs text-gray-600">Department: {form.department || ""}</div>
